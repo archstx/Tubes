@@ -116,3 +116,92 @@ void addMusicToComposer(adrComposer C, adrMusic M) {
         M->next = nullptr;
     }
 }
+
+
+// hapus semua child music milik satu composer
+void deleteAllChildMusic(adrMusic &child) {
+    while (child != nullptr) {
+        adrMusic p = child;
+        child = child->next;
+        delete p;
+    }
+}
+
+void deleteComposerFirst(listComp &L) {
+    if (L.first == nullptr) {
+        cout << "List composer kosong.\n";
+        return;
+    }
+
+    adrComposer p = L.first;
+
+    // hapus semua music milik composer ini
+    deleteAllChildMusic(p->child);
+
+    if (L.first == L.last) { // cuma 1 elemen
+        L.first = nullptr;
+        L.last = nullptr;
+    } else {
+        L.first = p->next;
+        L.first->prev = nullptr;
+    }
+
+    delete p;
+
+    cout << "\033[1;32m"
+         << "Composer pertama berhasil dihapus!"
+         << "\033[0m" << endl;
+}
+
+void deleteComposerLast(listComp &L) {
+    if (L.first == nullptr) {
+        cout << "List composer kosong.\n";
+        return;
+    }
+
+    adrComposer p = L.last;
+
+    // hapus semua music milik composer ini
+    deleteAllChildMusic(p->child);
+
+    if (L.first == L.last) { // cuma 1 elemen
+        L.first = nullptr;
+        L.last = nullptr;
+    } else {
+        L.last = p->prev;
+        L.last->next = nullptr;
+    }
+
+    delete p;
+
+    cout << "\033[1;32m"
+         << "Composer terakhir berhasil dihapus!"
+         << "\033[0m" << endl;
+}
+
+void deleteComposerAfter(listComp &L, adrComposer prec) {
+    if (prec == nullptr || prec->next == nullptr) {
+        cout << "Tidak ada composer setelah posisi tersebut.\n";
+        return;
+    }
+
+    adrComposer p = prec->next;
+
+    // hapus semua music milik composer ini
+    deleteAllChildMusic(p->child);
+
+    prec->next = p->next;
+    if (p->next != nullptr) {
+        p->next->prev = prec;
+    } else {
+        // kalau yang dihapus adalah last
+        L.last = prec;
+    }
+
+    delete p;
+
+    cout << "\033[1;32m"
+         << "Composer setelah elemen tersebut berhasil dihapus!"
+         << "\033[0m" << endl;
+}
+
