@@ -34,4 +34,9 @@ void showComposer(listComp L);
 
 void addMusicToComposer(adrComposer C, adrMusic M);
 
+void deleteComposerFirst(listComp &L);
+void deleteComposerLast(listComp &L);
+void deleteComposerAfter(listComp &L, adrComposer prec);
+
 #endif // COMPOSER_H_INCLUDED
+
