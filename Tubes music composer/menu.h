@@ -1,24 +1,22 @@
-#ifndef MENU_H_INCLUDED
-#define MENU_H_INCLUDED
+#ifndef MAIN_H_INCLUDED
+#define MAIN_H_INCLUDED
 
+#include <iostream>
 #include "composer.h"
 #include "music.h"
 
-void adminMenu(listComp &LC);
-void userMenu(listComp LC);
+using namespace std;
 
-// composer
-void menuInsertComposer(listComp &LC);
-void menuDeleteComposer(listComp &LC);
-void menuShowComposer(listComp LC);
-
-// music
-void menuInsertMusicToComposer(listComp &LC);
-void menuDeleteMusicFromComposer(listComp &LC);
-void menuShowMusicOfComposer(listComp LC);
-
-// user-only
-void menuSearchComposer(listComp LC);
-void menuSearchMusic(listComp LC);
+void menuAdmin(ListComposer &L);
+void menuUser(ListComposer &L);
+void menuComposer(ListComposer &L);
+void menuMusic(ListComposer &L);
+void printComposerMusic(ListComposer L);
+void studiKasus1(ListComposer &L);
+void studiKasus2(ListComposer &L);
+void studiKasus3(ListComposer &L);
+void studiKasus4(ListComposer L);
+void studiKasus5(ListComposer &L);
+void studiKasus6(ListComposer L);
 
 #endif
