@@ -1,32 +1,43 @@
 #include <iostream>
+#include "menu.h"
 #include "composer.h"
 #include "music.h"
+
 using namespace std;
 
-void menuAdmin(listComp&, listMusic&);
-void menuUser(listComp, listMusic);
-
 int main() {
-    listComp LC;
-    listMusic LM;
-    int role = -1;
+    ListComposer L;
+    createListComposer(L);
 
-    createComposerList(LC);
-    createMusicList(LM);
+    int privilege = -1;
 
-    while (role != 0) {
-        cout << "\033[1;35m";                   //warna ungu
-        cout << "=== PROGRAM MUSIK & KOMPOSER ===" << endl;
-        cout << "\033[0m";                      //reset warna
-        cout << "1. Login Admin" << endl;
-        cout << "2. Login Pengguna" << endl;
+    while (privilege != 0) {
+        cout << "\n=========================================" << endl;
+        cout << "     SISTEM DATA COMPOSER & MUSIC        " << endl;
+        cout << "=========================================" << endl;
+        cout << "1. Admin" << endl;
+        cout << "2. User" << endl;
         cout << "0. Keluar" << endl;
-        cout << "Pilihan: ";
-        cin >> role;
-        cout << endl;
+        cout << "-----------------------------------------" << endl;
+        cout << "Pilih mode akses: ";
+        cin >> privilege;
 
-        if (role == 1) menuAdmin(LC, LM);
-        else if (role == 2) menuUser(LC, LM);
+        switch (privilege) {
+            case 1:
+                menuAdmin(L);
+                break;
+
+            case 2:
+                menuUser(L);
+                break;
+
+            case 0:
+                cout << "\nTerima kasih telah menggunakan sistem ini!" << endl;
+                break;
+
+            default:
+                cout << "\nPilihan tidak valid! Silakan coba lagi.\n" << endl;
+        }
     }
 
     return 0;

@@ -1,38 +1,33 @@
 #ifndef MUSIC_H_INCLUDED
 #define MUSIC_H_INCLUDED
-#include <string>
+
+#include <iostream>
+#include "composer.h"
 using namespace std;
 
-typedef struct Music *adrMusic;
-
-struct infotypeM {
-    int release;
-    float rating;
-    string title;
-};
-
 struct Music {
-    infotypeM info;
-    adrMusic next;
+    string judul;
+    int ID;
+    string genre;
 };
 
-struct listMusic {
-    adrMusic first;
+typedef Music infotypeMus;
+typedef struct elmenMus *adrMus;
+
+struct elmenMus {
+    infotypeMus infoMus;
+    adrMus next;
+    adrMus prev;
 };
 
-void createMusicList(listMusic &L);
-adrMusic createElmMusic(int release, float rating, string title);
-void insertMusicFirst(listMusic &L, adrMusic p);
-void insertMusicLast(listMusic &L, adrMusic p);
-void insertMusicAfter(listMusic &L, adrMusic prec, adrMusic p);
-void showMusic(listMusic L);
+adrMus createElemenMusic(string judul, int ID, string genre);
+void insertFirstMusic(adrComp C, adrMus M);
+void insertLastMusic(adrComp C, adrMus M);
+void insertAfterMusic(adrMus prec, adrMus M);
+void deleteFirstMusic(adrComp, adrMus &M);
+void deleteLastMusic(adrComp, adrMus &M);
+void deleteAfterMusic(adrMus prec, adrMus &M);
+adrMus findElemenMusic(adrComp C, string judul);
+void viewMusic(adrComp C);
 
-void deleteMusicFirst(listMusic &L);
-void deleteMusicLast(listMusic &L);
-void deleteMusicAfter(listMusic &L, adrMusic prec);
-
-void sortMusicByRelease(listMusic &L, bool ascending);
-void sortMusicByRating(listMusic &L, bool ascending);
-
-#endif // MUSIC_H_INCLUDED
-
+#endif

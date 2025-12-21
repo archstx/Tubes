@@ -1,42 +1,40 @@
 #ifndef COMPOSER_H_INCLUDED
 #define COMPOSER_H_INCLUDED
+
 #include <string>
-#include "music.h"
 
 using namespace std;
 
-typedef struct Composer *adrComposer;
-
-struct infotypeC {
-    int id;
-    string name;
+struct ComposerInfo {
+    string nama;
+    string kode;
+    int umur;
 };
 
-struct Composer {
-    infotypeC info;
-    adrComposer next;
-    adrComposer prev;
-    adrMusic child;
+typedef ComposerInfo infotypeComp;
+typedef struct elmenComposer *adrComp;
+typedef struct elmenMus *adrMus;
+
+struct elmenComposer {
+    infotypeComp infoComposer;
+    adrComp next;
+    adrMus nextMusic;
 };
 
-struct listComp {
-    adrComposer first;
-    adrComposer last;
+struct ListComposer {
+    adrComp first;
 };
 
-void createComposerList(listComp &L);
-adrComposer createElmComposer(int id, string name);
-void insertComposerFirst(listComp &L, adrComposer p);
-void insertComposerLast(listComp &L, adrComposer p);
-void insertComposerAfter(listComp &L, adrComposer prec, adrComposer p);
-adrComposer findComposer(listComp L, int id);
-void showComposer(listComp L);
+void createListComposer(ListComposer &L);
+void insertFirstComposer(ListComposer &L, adrComp Comp);
+void insertLastComposer(ListComposer &L, adrComp Comp);
+void insertAfterComposer(ListComposer &L, adrComp Comp, adrComp prec);
+void deleteFirstComposer(ListComposer &L, adrComp &Comp);
+void deleteLastComposer(ListComposer &L, adrComp &Comp);
+void deleteAfterComposer(ListComposer &L, adrComp &Comp, adrComp prec);
+adrComp findElemenComposer(ListComposer L, string nama);
+void menghitungJumlahComposer(ListComposer L);
+adrComp createElementComposer(string nama, string kode, int umur);
+void viewComposer(ListComposer L);
 
-void addMusicToComposer(adrComposer C, adrMusic M);
-
-void deleteComposerFirst(listComp &L);
-void deleteComposerLast(listComp &L);
-void deleteComposerAfter(listComp &L, adrComposer prec);
-
-#endif // COMPOSER_H_INCLUDED
-
+#endif

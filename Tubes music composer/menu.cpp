@@ -1,240 +1,607 @@
-#include <iostream>
+#include "menu.h"
 #include "composer.h"
 #include "music.h"
+
 using namespace std;
 
-void menuAdmin(listComp &LC, listMusic &LM) {
-    int pilihan = -1;
-    while (pilihan != 0) {
-        cout << "\033[1;34m";                   //warna biru
-        cout << "=== MENU ADMIN ===" << endl;
-        cout << "\033[0m";                      //reset warna
-        cout << "1. Tambah Composer" << endl;
-        cout << "2. Tambah Music" << endl;
-        cout << "3. Hubungkan Composer - Music" << endl;
-        cout << "4. Tampilkan Composer" << endl;
-        cout << "5. Tampilkan Music" << endl;
-        cout << "6. Hapus Composer" << endl;
-        cout << "7. Hapus Music" << endl;
-        cout << "8. Sorting Music" << endl;
-        cout << "0. Logout" << endl;
-        cout << "Pilih: ";
-        cin >> pilihan;
-        cout << endl;
+void menuAdmin(ListComposer &L){
+    int option = -99;
+    while (option != 0) {
+        cout << "============ Menu Admin ============" << endl;
+        cout << "|| 1. Composer                    ||" << endl;
+        cout << "|| 2. Music                       ||" << endl;
+        cout << "|| 0. back                        ||" << endl;
+        cout << "====================================" << endl;
+        cout << "Pilih opsi : ";
+        cin >> option;
+        switch(option) {
+           case 1  :
+              menuComposer(L);
+              break;
+           case 2  :
+              menuMusic(L);
+              break;
+           case 0 :
+              break;
+           default :
+               cout << "Pilihan tidak valid!\n" << endl;
+        }
+    }
+}
 
-        if (pilihan == 1) {             //opsi 1
-            int id;
-            string nama;
-            cout << "ID: ";
-            cin >> id;
-            cout << "Nama: ";
-            cin >> nama;
+void menuComposer(ListComposer &L){
+    int option = -99;
+    adrComp C = nullptr, precC;
+    string nama, kode, namaPrec;
+    int umur;
+    while (option != 0) {
+        cout << "============ Menu Composer ===========" << endl;
+        cout << "|| 1. insert first                ||" << endl;
+        cout << "|| 2. insert last                 ||" << endl;
+        cout << "|| 3. insert after                ||" << endl;
+        cout << "|| 4. delete first                ||" << endl;
+        cout << "|| 5. delete last                 ||" << endl;
+        cout << "|| 6. delete after                ||" << endl;
+        cout << "|| 7. tampilkan composer          ||" << endl;
+        cout << "|| 0. back                        ||" << endl;
+        cout << "====================================" << endl;
+        cout << "Pilih opsi : ";
+        cin >> option;
+        switch(option) {
+           case 1  :
+              cout << "Masukkan nama composer: ";
+              cin >> nama;
+              cout << "Masukkan kode composer: ";
+              cin >> kode;
+              cout << "Masukkan umur composer: ";
+              cin >> umur;
+              C = createElementComposer(nama, kode, umur);
+              insertFirstComposer(L, C);
+              cout << "Data composer berhasil ditambahkan!\n" << endl;
+              break;
+           case 2  :
+              cout << "Masukkan nama composer: ";
+              cin >> nama;
+              cout << "Masukkan kode composer: ";
+              cin >> kode;
+              cout << "Masukkan umur composer: ";
+              cin >> umur;
+              C = createElementComposer(nama, kode, umur);
+              insertLastComposer(L, C);
+              cout << "Data composer berhasil ditambahkan!\n" << endl;
+              break;
+           case 3 :{
+              viewComposer(L);
+              cout << "Masukkan nama composer prec: ";
+              cin >> namaPrec;
+              precC = findElemenComposer(L, namaPrec);
+              if (precC != nullptr){
+                cout << "Masukkan nama composer: ";
+                cin >> nama;
+                cout << "Masukkan kode composer: ";
+                cin >> kode;
+                cout << "Masukkan umur composer: ";
+                cin >> umur;
+                C = createElementComposer(nama, kode, umur);
+                insertAfterComposer(L, C, precC);
+                cout << "Data composer berhasil ditambahkan!\n" << endl;
+              } else {
+                cout << "Composer dengan nama " << namaPrec << " tidak ditemukan!\n" << endl;
+              }
+              break;
+           }
+           case 4 :
+              deleteFirstComposer(L, C);
+              if (C != nullptr) {
+                  cout << "Composer " << C->infoComposer.nama << " berhasil dihapus!\n" << endl;
+              }
+              break;
+           case 5 :
+              deleteLastComposer(L, C);
+              if (C != nullptr) {
+                  cout << "Composer " << C->infoComposer.nama << " berhasil dihapus!\n" << endl;
+              }
+              break;
+           case 6 :
+              viewComposer(L);
+              cout << "Masukkan nama composer prec: ";
+              cin >> namaPrec;
+              precC = findElemenComposer(L, namaPrec);
+              if (precC == nullptr){
+                cout << "Composer dengan nama " << namaPrec << " tidak ditemukan!\n" << endl;
+              } else if (precC->next == nullptr){
+                cout << "Tidak ada data composer setelah nama " << namaPrec << "\n" << endl;
+              } else {
+                deleteAfterComposer(L, C, precC);
+                if (C != nullptr) {
+                    cout << "Composer " << C->infoComposer.nama << " berhasil dihapus!\n" << endl;
+                }
+              }
+              break;
+           case 7 :
+              viewComposer(L);
+              break;
+           case 0 :
+              break;
+           default :
+              cout << "Pilihan tidak valid!\n" << endl;
+        }
+    }
+}
 
-            int position;
-            cout << "Insert Composer di posisi: \n1. First\n2. Last\n3. After ID tertentu\nPilih: ";
-            cin >> position;
+void menuMusic(ListComposer &L){
+    int option = -99;
+    adrComp C = nullptr, tempC;
+    adrMus M = nullptr, precM;
+    string nama, namaPrec;
+    int ID;
+    string genre;
+    bool laguSudahAda;
+    while (option != 0) {
+        cout << "============ Menu Music ============" << endl;
+        cout << "|| 1. insert first                ||" << endl;
+        cout << "|| 2. insert last                 ||" << endl;
+        cout << "|| 3. insert after                ||" << endl;
+        cout << "|| 4. delete first                ||" << endl;
+        cout << "|| 5. delete last                 ||" << endl;
+        cout << "|| 6. delete after                ||" << endl;
+        cout << "|| 7. tampilkan lagu              ||" << endl;
+        cout << "|| 0. back                        ||" << endl;
+        cout << "====================================" << endl;
+        cout << "Pilih opsi : ";
+        cin >> option;
+        switch(option) {
+           case 1  :
+              cout << "Masukkan nama composer yang akan menambah lagu: ";
+              cin >> nama;
+              C = findElemenComposer(L, nama);
+              if (C == nullptr){
+                  cout << "Nama composer tidak ditemukan!\n" << endl;
+                  break;
+              }
+              cout << "Masukkan judul lagu: ";
+              cin >> nama;
+              if (findElemenMusic(C, nama) != nullptr){
+                cout << "Composer ini sudah memiliki lagu tersebut!\n" << endl;
+                break;
+              }
+              laguSudahAda = false;
+              tempC = L.first;
+              while (tempC != nullptr){
+                if (findElemenMusic(tempC, nama) != nullptr){
+                    cout << "Lagu ini sudah dimiliki oleh composer lain!" << endl;
+                    laguSudahAda = true;
+                    break;
+                }
+                tempC = tempC->next;
+              }
+              if (!laguSudahAda){
+                cout << "Masukkan ID lagu: ";
+                cin >> ID;
+                cout << "Masukkan genre lagu: ";
+                cin >> genre;
+                M = createElemenMusic(nama, ID, genre);
+                insertFirstMusic(C, M);
+                cout << "Data lagu berhasil ditambahkan!\n" << endl;
+              }
+              break;
+           case 2  :
+              cout << "Masukkan nama composer yang akan menambah lagu: ";
+              cin >> nama;
+              C = findElemenComposer(L, nama);
+              if (C == nullptr){
+                  cout << "Nama composer tidak ditemukan!\n" << endl;
+                  break;
+              }
+              cout << "Masukkan judul lagu: ";
+              cin >> nama;
+              if (findElemenMusic(C, nama) != nullptr){
+                cout << "Composer ini sudah memiliki lagu tersebut!\n" << endl;
+                break;
+              }
+              laguSudahAda = false;
+              tempC = L.first;
+              while (tempC != nullptr){
+                if (findElemenMusic(tempC, nama) != nullptr){
+                    cout << "Lagu ini sudah dimiliki oleh composer lain!" << endl;
+                    laguSudahAda = true;
+                    break;
+                }
+                tempC = tempC->next;
+              }
+              if (!laguSudahAda){
+                cout << "Masukkan ID lagu: ";
+                cin >> ID;
+                cout << "Masukkan genre lagu: ";
+                cin >> genre;
+                M = createElemenMusic(nama, ID, genre);
+                insertLastMusic(C, M);
+                cout << "Data lagu berhasil ditambahkan!\n" << endl;
+              }
+              break;
+           case 3 :
+              cout << "Masukkan nama composer yang akan menambah lagu: ";
+              cin >> nama;
+              C = findElemenComposer(L, nama);
+              if (C == nullptr){
+                  cout << "Nama composer tidak ditemukan!\n" << endl;
+                  break;
+              }
+              viewMusic(C);
+              cout << "Masukkan judul lagu prec: ";
+              cin >> namaPrec;
+              precM = findElemenMusic(C, namaPrec);
+              if (precM != nullptr){
+                cout << "Masukkan judul lagu baru: ";
+                cin >> nama;
+                if (findElemenMusic(C, nama) != nullptr){
+                    cout << "Composer ini sudah memiliki lagu tersebut!\n" << endl;
+                    break;
+                }
+                laguSudahAda = false;
+                tempC = L.first;
+                while (tempC != nullptr){
+                    if (findElemenMusic(tempC, nama) != nullptr){
+                        cout << "Lagu ini sudah dimiliki oleh composer lain!" << endl;
+                        laguSudahAda = true;
+                        break;
+                    }
+                    tempC = tempC->next;
+                }
+                if (!laguSudahAda){
+                    cout << "Masukkan ID lagu: ";
+                    cin >> ID;
+                    cout << "Masukkan genre lagu: ";
+                    cin >> genre;
+                    M = createElemenMusic(nama, ID, genre);
+                    insertAfterMusic(precM, M);
+                    cout << "Data lagu berhasil ditambahkan!\n" << endl;
+                }
+              } else {
+                cout << "Lagu " << namaPrec << " tidak ditemukan!\n" << endl;
+              }
+              break;
+           case 4 :
+              cout << "Masukkan nama composer yang akan menghapus lagu: ";
+              cin >> nama;
+              C = findElemenComposer(L, nama);
+              if (C == nullptr){
+                  cout << "Nama composer tidak ditemukan!\n" << endl;
+                  break;
+              }
+              if (C->nextMusic == nullptr){
+                cout << "Tidak ada lagu yang dapat dihapus!\n" << endl;
+                break;
+              } else {
+                adrMus deleted = nullptr;
+                deleteFirstMusic(C, deleted);
+                if (deleted != nullptr) {
+                    cout << "Lagu " << deleted->infoMus.judul << " berhasil dihapus!\n" << endl;
+                }
+              }
+              break;
+           case 5 :
+              cout << "Masukkan nama composer yang akan menghapus lagu: ";
+              cin >> nama;
+              C = findElemenComposer(L, nama);
+              if (C == nullptr){
+                  cout << "Nama composer tidak ditemukan!\n" << endl;
+                  break;
+              }
+              if (C->nextMusic == nullptr){
+                cout << "Tidak ada lagu yang dapat dihapus!\n" << endl;
+                break;
+              } else {
+                adrMus deleted = nullptr;
+                deleteLastMusic(C, deleted);
+                if (deleted != nullptr) {
+                    cout << "Lagu " << deleted->infoMus.judul << " berhasil dihapus!\n" << endl;
+                }
+              }
+              break;
+           case 6 :
+              cout << "Masukkan nama composer yang akan menghapus lagu: ";
+              cin >> nama;
+              C = findElemenComposer(L, nama);
+              if (C == nullptr){
+                  cout << "Nama composer tidak ditemukan!\n" << endl;
+                  break;
+              }
+              if (C->nextMusic == nullptr){
+                cout << "Composer belum memiliki lagu\n" << endl;
+                break;
+              }
+              viewMusic(C);
+              cout << "Masukkan judul lagu prec: ";
+              cin >> namaPrec;
+              precM = findElemenMusic(C, namaPrec);
+              if (precM == nullptr){
+                cout << "Lagu " << namaPrec << " tidak ditemukan!\n" << endl;
+                break;
+              } else if (precM->next == nullptr){
+                cout << "Tidak ada data lagu setelah lagu " << namaPrec << "\n" << endl;
+                break;
+              } else {
+                adrMus deleted = nullptr;
+                deleteAfterMusic(precM, deleted);
+                if (deleted != nullptr) {
+                    cout << "Lagu " << deleted->infoMus.judul << " berhasil dihapus!\n" << endl;
+                }
+              }
+              break;
+           case 7 :
+              viewComposer(L);
+              cout << "Masukkan nama composer: ";
+              cin >> nama;
+              C = findElemenComposer(L, nama);
+              if (C == nullptr){
+                cout << "Composer tidak ditemukan!\n" << endl;
+              } else if (C->nextMusic == nullptr){
+                cout << "Composer belum memiliki lagu!\n" << endl;
+              } else {
+                viewMusic(C);
+              }
+              break;
+           case 0 :
+              break;
+           default :
+              cout << "Pilihan tidak valid!\n" << endl;
+        }
+    }
+}
 
-            if (position == 1){
-                    insertComposerFirst(LC, createElmComposer(id, nama));
-            } else if (position == 2){
-                insertComposerLast(LC, createElmComposer(id, nama));
-            } else if (position == 3){
-                int afterID;
-                cout << endl;
-                cout << "Masukkan ID setelah composer: ";
-                cin >> afterID;
-                adrComposer prec = findComposer(LC, afterID);
-                if (prec != nullptr){
-                        insertComposerAfter(LC, prec, createElmComposer(id, nama));
-                } else {
-                    cout << endl;
-                    cout << "\033[1;31m";                           // warna merah
-                    cout << "Composer ID tidak ditemukan." << endl;
-                    cout << "\033[0m" << endl;                      // Reset warna
+void menuUser(ListComposer &L){
+    int option = -99;
+    while (option != 0) {
+        cout << "====== Menu Studi Kasus =======================================" << endl;
+        cout << "|| 1. Menampilkan composer dan lagu                          ||" << endl;
+        cout << "|| 2. Input data composer (NAMA / KODE harus berbeda)        ||" << endl;
+        cout << "|| 3. Menghapus composer yang tidak memiliki lagu            ||" << endl;
+        cout << "|| 4. Menghapus lagu dari composer tertentu                  ||" << endl;
+        cout << "|| 5. Menghitung lagu yang dimiliki setiap composer          ||" << endl;
+        cout << "|| 6. Menyisipkan lagu kepada composer pilihan               ||" << endl;
+        cout << "|| 7. Menghitung total lagu yang sudah ada                   ||" << endl;
+        cout << "|| 0. back                                                   ||" << endl;
+        cout << "===============================================================" << endl;
+        cout << "Pilih opsi : ";
+        cin >> option;
+        switch(option) {
+           case 1  :
+              printComposerMusic(L);
+              break;
+           case 2  :
+              studiKasus1(L);
+              break;
+            case 3 :
+                studiKasus2(L);
+                break;
+            case 4 :
+                studiKasus3(L);
+                break;
+            case 5 :
+                studiKasus4(L);
+                break;
+            case 6 :
+                studiKasus5(L);
+                break;
+            case 7 :
+                studiKasus6(L);
+                break;
+           case 0  :
+              cout << "Kembali ke menu admin..." << endl;
+              break;
+           default:
+              cout << "Pilihan tidak valid" << endl;
+        }
+    }
+}
+
+void studiKasus1(ListComposer &L){
+    string nama, kode;
+    int umur;
+    adrComp q;
+    cout << "Pada studi kasus ini kita akan memasukkan data composer baru\n";
+    cout << "Inputkan data composer baru :\n";
+    cout << "Nama : ";
+    cin >> nama;
+    cout << "Kode : ";
+    cin >> kode;
+    cout << "Umur : ";
+    cin >> umur;
+
+    q = L.first;
+    while (q != nullptr){
+        if (q->infoComposer.nama == nama || q->infoComposer.kode == kode){
+           cout << "KODE / NAMA composer sama! Data ditolak.\n" << endl;
+           return;
+        }
+        q = q->next;
+    }
+    adrComp C = createElementComposer(nama, kode, umur);
+    insertLastComposer(L, C);
+    cout << "DATA COMPOSER BERHASIL DIMASUKAN!\n" << endl;
+}
+
+void studiKasus2(ListComposer &L){
+    int hapus = 0;
+    cout << "Pada studi kasus ini kita akan menghapus composer yang tidak memiliki lagu sama sekali" << endl;
+    cout << "Menghapus composer yang tidak memiliki lagu..." << endl;
+
+    adrComp Q = L.first;
+    adrComp nextQ;
+
+    while (Q != nullptr){
+        nextQ = Q->next;
+
+        if (Q->nextMusic == nullptr){
+            hapus++;
+            if (Q == L.first){
+                adrComp deleted = nullptr;
+                deleteFirstComposer(L, deleted);
+                if (deleted != nullptr) {
+                    cout << "Composer " << deleted->infoComposer.nama << " dihapus.\n";
+                }
+            } else if (Q->next == nullptr){
+                adrComp deleted = nullptr;
+                deleteLastComposer(L, deleted);
+                if (deleted != nullptr) {
+                    cout << "Composer " << deleted->infoComposer.nama << " dihapus.\n";
+                }
+            } else {
+                adrComp C = L.first;
+                while (C->next != Q){
+                    C = C->next;
+                }
+                adrComp deleted = nullptr;
+                deleteAfterComposer(L, deleted, C);
+                if (deleted != nullptr) {
+                    cout << "Composer " << deleted->infoComposer.nama << " dihapus.\n";
                 }
             }
         }
+        Q = nextQ;
+    }
 
-        else if (pilihan == 2) {                //opsi 2
-            string title, afterTitle;
-            int tahun;
-            float rating;
+    if (hapus == 0){
+        cout << "Tidak ada composer yang tidak memiliki lagu.\n" << endl;
+    } else {
+        cout << "Semua composer tanpa lagu telah dihapus (" << hapus << " data).\n" << endl;
+    }
+}
 
-            cout << "Title: ";
-            cin >> title;
-            cout << "Release: ";
-            cin >> tahun;
-            cout << "Rating: ";
-            cin >> rating;
-
-            int position;
-            cout << "Insert Music di posisi: \n1. First\n2. Last\n3. After Title tertentu\nPilih: ";
-            cin >> position;
-
-            if (position == 1){
-                    insertMusicFirst(LM, createElmMusic(tahun, rating, title));
-            } else if (position == 2){
-                insertMusicLast(LM, createElmMusic(tahun, rating, title));
-            } else if (position == 3){
-                int afterID;
-                cout << endl;
-                cout << "Masukkan Title setelah musik: ";
-                cin >> afterTitle;
-
-                adrMusic prec = LM.first;
-                while(prec != nullptr && prec->info.title != afterTitle){
-                        prec = prec->next;
-                }
-                if(prec != nullptr) {
-                        insertMusicAfter(LM, prec, createElmMusic(tahun, rating, title));
-                } else {
-                    cout << endl;
-                    cout << "\033[1;31m";                           // warna merah
-                    cout << "Music title tidak ditemukan." << endl;
-                    cout << "\033[0m" << endl;                      // Reset warna
-                }
-            }
-        }
-
-        else if (pilihan == 3) {                //opsi 3
-            int id;
-            string judul;
-
-            cout << "ID Composer: ";
-            cin >> id;
-            cout << "Judul Musik: ";
-            cin >> judul;
-
-            adrComposer C = findComposer(LC, id);
-            adrMusic M = LM.first;
-            while (M != nullptr && M->info.title != judul) {
+void printComposerMusic(ListComposer L){
+    adrComp C = L.first;
+    if (C == nullptr){
+        cout << "Tidak ada data composer." << endl;
+        return;
+    }
+    cout << "Daftar Composer dan Lagu:" << endl;
+    while (C != nullptr){
+        cout << "==============================" << endl;
+        cout << "Nama Composer: " << C->infoComposer.nama << "\nKode: " << C->infoComposer.kode << "\nUmur: " << C->infoComposer.umur << endl;
+        cout << "------------------------------" << endl;
+        adrMus M = (adrMus)C->nextMusic;
+        if (M == nullptr){
+            cout << "  Tidak ada lagu." << endl;
+        } else {
+            cout << "  Lagu: ";
+            while (M != nullptr){
+                cout << M->infoMus.judul << " (" << M->infoMus.ID << "), ";
                 M = M->next;
             }
-
-            if (C != nullptr && M != nullptr) {
-                addMusicToComposer(C, createElmMusic(M->info.release, M->info.rating, M->info.title));
-                cout << "Data berhasil disambungkan!" << endl;
-            } else {
-                cout << endl;
-                cout << "\033[1;31m";                           // warna merah
-                cout << "Composer ID tidak ditemukan." << endl;
-                cout << "\033[0m" << endl;                      // reset warna
-            }
             cout << endl;
         }
+        C = C->next;
+    }
+    cout << "==============================" << endl;
+}
 
-        else if (pilihan == 4) {                //opsi 4
-            showComposer(LC);
-        }
+void studiKasus3(ListComposer &L){
+    cout << "Pada studi kasus ini kita akan menghapus lagu tertentu dari composer tertentu\n";
+    string kodeComposer;
+    int idLagu;
+    cout << "Masukkan kode composer: ";
+    cin >> kodeComposer;
+    cout << "Masukkan ID lagu yang akan dihapus: ";
+    cin >> idLagu;
 
-        else if (pilihan == 5) {                //opsi 5
-            showMusic(LM);
-            cout << endl;
-        }
+    adrComp C = L.first;
+    while (C != nullptr && C->infoComposer.kode != kodeComposer){
+        C = C->next;
+    }
+    if (C == nullptr){
+        cout << "Composer dengan kode tersebut tidak ditemukan." << endl;
+        return;
+    }
 
-        else if (pilihan == 6) {      // Hapus Composer
-            int opt;
-            cout << "Hapus Composer: \n1. First\n2. Last\n3. After ID tertentu\nPilih: ";
-            cin >> opt;
+    adrMus M = (adrMus)C->nextMusic;
+    while (M != nullptr && M->infoMus.ID != idLagu){
+        M = M->next;
+    }
 
-            if (opt == 1) {
-                deleteComposerFirst(LC);
-            } else if (opt == 2) {
-                deleteComposerLast(LC);
-            } else if (opt == 3) {
-                int idPrec;
-                cout << "Masukkan ID composer sebagai posisi sebelum yang akan dihapus: ";
-                cin >> idPrec;
-                adrComposer prec = findComposer(LC, idPrec);
-                if (prec != nullptr) {
-                    deleteComposerAfter(LC, prec);
-                } else {
-                    cout << "\033[1;31m"
-                         << "Composer dengan ID tersebut tidak ditemukan."
-                         << "\033[0m" << endl;
-                }
+    if (M == nullptr){
+        cout << "Lagu dengan ID tersebut tidak ditemukan pada composer ini." << endl;
+    } else {
+        adrMus deleted = nullptr;
+        if (M == (adrMus)C->nextMusic){
+            deleteFirstMusic(C, deleted);
+        } else if (M->next == nullptr){
+            deleteLastMusic(C, deleted);
+        } else {
+            adrMus Z = (adrMus)C->nextMusic;
+            while (Z->next != M){
+                Z = Z->next;
             }
-            cout << endl;
+            deleteAfterMusic(Z, deleted);
         }
-
-        else if (pilihan == 7) {      // Hapus Music dari list global LM
-            int opt;
-            cout << "Hapus Music: \n1. First\n2. Last\n3. After Title tertentu\nPilih: ";
-            cin >> opt;
-
-            if (opt == 1) {
-                deleteMusicFirst(LM);
-            } else if (opt == 2) {
-                deleteMusicLast(LM);
-            } else if (opt == 3) {
-                string titlePrec;
-                cout << "Masukkan title musik sebagai posisi sebelum yang akan dihapus: ";
-                cin >> titlePrec;
-
-                adrMusic prec = LM.first;
-                while (prec != nullptr && prec->info.title != titlePrec) {
-                    prec = prec->next;
-                }
-
-                if (prec != nullptr) {
-                    deleteMusicAfter(LM, prec);
-                } else {
-                    cout << "\033[1;31m"
-                         << "Music title tidak ditemukan."
-                         << "\033[0m" << endl;
-                }
-            }
-            cout << endl;
-        }
-
-        else if (pilihan == 8) {      // Sorting Music
-            if (LM.first == nullptr) {
-                cout << "List music kosong.\n\n";
-            } else {
-                int kriteria, urut;
-                cout << "Sorting berdasarkan: \n1. Tahun Rilis\n2. Rating\nPilih: ";
-                cin >> kriteria;
-                cout << "Urutan: \n1. ASC (kecil ke besar)\n2. DESC (besar ke kecil)\nPilih: ";
-                cin >> urut;
-
-                bool asc = (urut == 1);
-
-                if (kriteria == 1) {
-                    sortMusicByRelease(LM, asc);
-                } else if (kriteria == 2) {
-                    sortMusicByRating(LM, asc);
-                } else {
-                    cout << "Pilihan kriteria tidak valid.\n";
-                }
-
-                cout << "\033[1;32m"
-                     << "Sorting selesai. Hasil list music:\n"
-                     << "\033[0m";
-                showMusic(LM);
-                cout << endl;
-            }
+        if (deleted != nullptr) {
+            cout << "Lagu " << deleted->infoMus.judul << " berhasil dihapus." << endl;
         }
     }
 }
 
-void menuUser(listComp LC, listMusic LM) {
-    int pilihan = -1;
-    while (pilihan != 0) {
-        cout << "\033[1;32m";                   //warna hijau
-        cout << "=== MENU USER ===" << endl;
-        cout << "\033[0m";                      //reset warna
-        cout << "1. Lihat Composer" << endl;
-        cout << "2. Lihat Music" << endl;
-        cout << "0. Logout" << endl;
-        cout << "Pilih: ";
-        cin >> pilihan;
-        cout << endl;
-
-        if (pilihan == 1){
-            showComposer(LC);
-        } else if (pilihan == 2){
-            showMusic(LM);
+void studiKasus4(ListComposer L){
+    cout << "Pada studi kasus ini kita akan menghitung jumlah lagu yang dimiliki oleh setiap composer\n";
+    adrComp C = L.first;
+    while (C != nullptr){
+        int jumlah = 0;
+        adrMus M = C->nextMusic;
+        while (M != nullptr){
+            jumlah++;
+            M = M->next;
         }
+        cout << "Composer " << C->infoComposer.nama << " memiliki " << jumlah << " lagu." << endl;
+        C = C->next;
     }
 }
 
+void studiKasus5(ListComposer &L){
+    cout << "Pada studi kasus ini kita akan menyisipkan lagu baru ke composer tertentu\n";
+    string kodeComposer, judulLagu, genre;
+    int idLagu;
+    cout << "Masukkan kode composer tujuan: ";
+    cin >> kodeComposer;
+    cout << "Masukkan judul lagu: ";
+    cin >> judulLagu;
+    cout << "Masukkan ID lagu: ";
+    cin >> idLagu;
+    cout << "Masukkan genre: ";
+    cin >> genre;
+
+    adrComp C = L.first;
+    while (C != nullptr){
+        if(findElemenMusic(C, judulLagu) != nullptr){
+            cout << "Gagal: Lagu sudah dimiliki oleh composer " << C->infoComposer.nama << endl;
+            return;
+        }
+        C = C->next;
+    }
+
+    C = L.first;
+    while (C != nullptr && C->infoComposer.kode != kodeComposer){
+        C = C->next;
+    }
+
+    if (C == nullptr){
+        cout << "Composer tujuan tidak ditemukan." << endl;
+    } else {
+        adrMus M = createElemenMusic(judulLagu, idLagu, genre);
+        insertLastMusic(C, M);
+        cout << "Lagu berhasil disisipkan." << endl;
+    }
+}
+
+void studiKasus6(ListComposer L){
+    cout << "Pada studi kasus ini kita akan menghitung jumlah lagu yang sudah ada" << endl;
+    int total = 0;
+    adrComp C = L.first;
+    while (C != nullptr){
+        adrMus M = C->nextMusic;
+        while (M != nullptr){
+            total = total + 1;
+            M = M->next;
+        }
+        C = C->next;
+    }
+    cout << "Total lagu yang sudah ada dalam database: " << total << endl;
+}
